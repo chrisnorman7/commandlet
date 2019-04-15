@@ -1,5 +1,5 @@
 # commandlet
-Workzeug-style commands.
+Werkzeug-style commands.
 
 ## Usage
 ```
@@ -18,7 +18,7 @@ def do_test(times, string):
 p.handle_command('test 4 Hello world.')
 ```
 
-As you can see, you can decorate functions with the Parser.command decorator to make them callable. They should all be given a name (used for pretty-printing mainly), and an argument string, which looks very similar to those seen in command line programs... And [Workzeug](https://palletsprojects.com/p/werkzeug/).
+As you can see, you can decorate functions with the Parser.command decorator to make them callable. They should all be given a name (used for pretty-printing mainly), and an argument string, which looks very similar to those seen in command line programs... And [Werkzeug](https://palletsprojects.com/p/werkzeug/).
 
 You can also add extra filters:
 
