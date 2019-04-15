@@ -56,11 +56,12 @@ class Command:
         """Convert an argument to a regular expression, and update
         self.arguments."""
         full, string = match.groups()
-        if ':' not in string:
-            string = self.parser.default_command_argument_filter + ':' + string
-        filter_name, variable_name = string.split(':')
+        data = string.split(':', 1)
+        if len(data) == 1:
+            data.insert(0, self.parser.default_command_argument_filter)
+        filter_name, argument_name = data
         filter_name = filter_name.strip()
-        argument_name = variable_name.strip()
+        argument_name = argument_name.strip()
         if argument_name not in self.func.args:
             raise UnusedArgumentError(self, argument_name)
         try:
@@ -68,4 +69,4 @@ class Command:
         except KeyError:
             raise InvalidFilterError(self, filter_name)
         self.args.append(Argument(argument_name, f))
-        return f.replacement
+        return '(?P<%s>%s)' % (argument_name, f.replacement)

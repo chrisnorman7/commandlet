@@ -2,6 +2,7 @@ import re
 from pytest import raises
 
 from commandlet import Command
+from commandlet.exc import InvalidFilterError
 
 
 class Works(Exception):
@@ -33,3 +34,11 @@ def test_with_args(parser):
 
     cmd = parser.commands[0]
     assert cmd.func.args == ['text']
+
+
+def test_invalid_filter(parser):
+    with raises(InvalidFilterError) as exc:
+        parser.command('test', 'test <invalid:text>')(lambda text: print(text))
+    cmd, name = exc.value.args
+    assert isinstance(cmd, Command)
+    assert name == 'invalid'
