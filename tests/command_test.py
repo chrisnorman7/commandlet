@@ -50,3 +50,15 @@ def test_unused_argument(parser):
     cmd, name = exc.value.args
     assert isinstance(cmd, Command)
     assert name == 'text'
+
+
+def test_call(parser):
+    @parser.command('test', 'test <first> with <second>')
+    def do_test(first, second):
+        return first, second
+
+    first = 'hello'
+    second = 'world'
+    f, s = parser.commands[0].call(first=first, second=second)
+    assert f == first
+    assert s == second

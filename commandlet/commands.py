@@ -70,3 +70,8 @@ class Command:
             raise InvalidFilterError(self, filter_name)
         self.args.append(Argument(argument_name, f))
         return '(?P<%s>%s)' % (argument_name, f.replacement)
+
+    def call(self, **context):
+        """Call this command, extracting argument values from context."""
+        args = self.func.make_args(**context)
+        return self.func.func(*args)
