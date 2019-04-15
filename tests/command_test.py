@@ -2,7 +2,7 @@ import re
 from pytest import raises
 
 from commandlet import Command
-from commandlet.exc import InvalidFilterError
+from commandlet.exc import InvalidFilterError, UnusedArgumentError
 
 
 class Works(Exception):
@@ -42,3 +42,11 @@ def test_invalid_filter(parser):
     cmd, name = exc.value.args
     assert isinstance(cmd, Command)
     assert name == 'invalid'
+
+
+def test_unused_argument(parser):
+    with raises(UnusedArgumentError) as exc:
+        parser.command('test', 'test <text>')(lambda: print('Failed.'))
+    cmd, name = exc.value.args
+    assert isinstance(cmd, Command)
+    assert name == 'text'
