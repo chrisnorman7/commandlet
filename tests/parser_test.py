@@ -2,8 +2,12 @@ from re import Pattern
 
 from pytest import raises
 
-from commandlet import Parser, Filter
+from commandlet import Parser, Filter, command
 from commandlet.exc import ConvertionError, CommandFailedError
+
+
+class Works(Exception):
+    pass
 
 
 def test_init(parser):
@@ -83,3 +87,17 @@ def test_tried_commands(parser):
     with raises(CommandFailedError) as exc:
         parser.handle_command('%s %s' % (name, name))
     assert exc.value.tried_commands == parser.commands
+
+
+def test_command():
+    p1 = Parser()
+    p2 = Parser()
+
+    @command([p1, p2], 'test')
+    def do_test():
+        raise Works()
+
+    with raises(Works):
+        p1.handle_command('test')
+    with raises(Works):
+        p2.handle_command('test')

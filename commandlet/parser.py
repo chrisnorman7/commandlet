@@ -8,6 +8,17 @@ from .exc import ConvertionError, CommandFailedError
 from .filters import Filter
 
 
+def command(parsers, *args, **kwargs):
+    """Used as a decorator to add a command to multiple parsers."""
+
+    def inner(func):
+        for parser in parsers:
+            parser.command(*args, **kwargs)(func)
+        return func
+
+    return inner
+
+
 @attrs
 class Parser:
     """A command parser. Decorate commands with Parser.command, filters with
