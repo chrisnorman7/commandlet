@@ -16,3 +16,8 @@ class FilterBase:
 @attrs
 class Filter(FilterBase, CommandFunction):
     """A filter for use with command parsers."""
+
+    def call(self, **context):
+        """Call this command, extracting argument values from context."""
+        args = self.make_args(**context)
+        return self.func(*args)

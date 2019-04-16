@@ -22,8 +22,8 @@ class Parser:
 
     def __attrs_post_init__(self):
         self.filter('str')(lambda text: text)
-        self.filter('int')(self.to_int)
-        self.filter('float')(self.to_float)
+        self.filter('int', replacement='[0-9]+')(self.to_int)
+        self.filter('float', replacement='[0-9]+[.][0-9]+')(self.to_float)
 
     def to_int(self, text):
         """Convert text to an integer."""

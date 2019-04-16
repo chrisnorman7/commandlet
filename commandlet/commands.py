@@ -71,7 +71,16 @@ class Command:
         self.args.append(Argument(argument_name, f))
         return '(?P<%s>%s)' % (argument_name, f.replacement)
 
+    def make_args(self, **context):
+        """Make a list of arguments which can be passed to self.call."""
+        for arg in self.args:
+            name = arg.name
+            text = context[name]
+            value = arg.filter.call(text=text, **context)
+            context[name] = value
+        return self.func.make_args(**context)
+
     def call(self, **context):
         """Call this command, extracting argument values from context."""
-        args = self.func.make_args(**context)
+        args = self.make_args(**context)
         return self.func.func(*args)
