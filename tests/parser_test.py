@@ -3,7 +3,7 @@ from re import Pattern
 from pytest import raises
 
 from commandlet import Parser, Filter
-from commandlet.exc import ConvertionError
+from commandlet.exc import ConvertionError, CommandFailedError
 
 
 def test_init(parser):
@@ -46,3 +46,40 @@ def test_to_float(parser):
 def test_str_filter(parser):
     string = 'testing'
     assert parser.filters['str'].func(string) == string
+
+
+def test_handle_command(parser):
+    name = 'test'
+    @parser.command(name, '%s <string>' % name)
+    def do_test(string):
+        return string
+
+    string = 'this'
+    assert parser.handle_command('%s %s' % (name, string)) == string
+
+
+def test_command_failed(parser):
+    @parser.command('test')
+    def do_test():
+        pass
+
+    with raises(CommandFailedError) as exc:
+        parser.handle_command('no such command')
+    assert exc.value.tried_commands == []
+
+
+def test_tried_commands(parser):
+    name = 'convert'
+    e = ConvertionError('Artificially cause command matching to fail.')
+
+    @parser.command(name, '%s <number>' % name)
+    def convert_1(number):
+        raise e
+
+    @parser.command(name, '%s <value>' % name)
+    def convert_2(value):
+        raise e
+
+    with raises(CommandFailedError) as exc:
+        parser.handle_command('%s %s' % (name, name))
+    assert exc.value.tried_commands == parser.commands

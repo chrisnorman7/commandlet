@@ -4,7 +4,7 @@ import re
 from attr import attrs, attrib, Factory
 
 from .commands import Command
-from .exc import ConvertionError
+from .exc import ConvertionError, CommandFailedError
 from .filters import Filter
 
 
@@ -61,3 +61,19 @@ class Parser:
             return func
 
         return inner
+
+    def handle_command(self, string, **context):
+        """Handle a command with the specified context."""
+        exc = CommandFailedError()
+        for cmd in self.commands:
+            m = cmd.regexp.match(string)
+            if m is None:
+                continue
+            ctx = context.copy()
+            ctx.update(**m.groupdict())
+            try:
+                return cmd.call(**ctx)
+            except ConvertionError:
+                exc.tried_commands.append(cmd)
+        else:
+            raise exc
