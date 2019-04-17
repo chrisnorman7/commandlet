@@ -1,5 +1,7 @@
 from re import Pattern
 
+from inspect import isgenerator
+
 from pytest import raises
 
 from commandlet import Parser, Filter, command
@@ -101,3 +103,12 @@ def test_command():
         p1.handle_command('test')
     with raises(Works):
         p2.handle_command('test')
+
+
+def test_generator(parser):
+
+    @parser.command('test')
+    def do_test():
+        yield 1
+
+    assert isgenerator(parser.handle_command('test'))
