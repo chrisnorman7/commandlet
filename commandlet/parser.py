@@ -88,3 +88,10 @@ class Parser:
                 exc.tried_commands.append(cmd)
         else:
             raise exc
+
+    def copy(self):
+        """Return a parser identical to this one."""
+        p = type(self)()
+        for a in self.__attrs_attrs__:
+            setattr(p, a.name, getattr(self, a.name))
+        return p

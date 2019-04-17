@@ -112,3 +112,17 @@ def test_generator(parser):
         yield 1
 
     assert isgenerator(parser.handle_command('test'))
+
+
+def test_copy(parser):
+    parser.command('print')(lambda text: print(text))
+    parser.command('nothing')(lambda: None)
+    p = parser.copy()
+    for a in parser.__attrs_attrs__:
+        name = a.name
+        old = getattr(parser, name)
+        new = getattr(p, name)
+        if old != new:
+            raise RuntimeError(
+                'Attribute %s does not match: %r -> %r.' % (name, old, new)
+            )
