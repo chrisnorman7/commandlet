@@ -36,7 +36,7 @@ def test_blank(parser):
     assert cmd.name == name
     assert cmd.usage == name
     assert isinstance(cmd, Command)
-    assert cmd.regexp is re.compile(name)
+    assert cmd.regexp is re.compile('^%s$' % name)
     assert parser.commands == [cmd]
     assert cmd.func.func is do_test
 
@@ -116,3 +116,13 @@ def test_multiple_args(parser):
     with raises(MatchFailed) as exc:
         cmd.call(obj=string, player=player)
     assert exc.value.args == (string,)
+
+
+def test_keyword_arguments(parser):
+
+    @parser.command('test', 'test', 'test <hello>')
+    def do_test(hello='world'):
+        return hello
+
+    assert parser.handle_command('test') == 'world'
+    assert parser.handle_command('test this') == 'this'

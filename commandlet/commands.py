@@ -14,15 +14,19 @@ class CommandFunction:
 
     func = attrib()
     args = attrib(default=Factory(list), init=False)
+    defaults = attrib(default=Factory(dict), init=False)
 
     def __attrs_post_init__(self) -> None:
         s = signature(self.func)
-        self.args.extend(p.name for p in s.parameters.values())
+        for p in s.parameters.values():
+            if p.kind is not p.POSITIONAL_ONLY:
+                self.defaults[p.name] = p.default
+            self.args.append(p.name)
 
     def make_args(self, **context):
         """Returns a list of arguments whose values are extracted from context,
         and are in the order specified by self.args."""
-        return [context[arg] for arg in self.args]
+        return [context.get(arg, self.defaults[arg]) for arg in self.args]
 
 
 @attrs
@@ -50,6 +54,7 @@ class Command:
             self.parser.command_argument_regexp, self.convert_argument,
             self.usage
         )
+        self.regexp = '^%s$' % self.regexp
         self.regexp = re.compile(self.regexp)
 
     def convert_argument(self, match):
