@@ -19,6 +19,17 @@ def command(parsers, *args, **kwargs):
     return inner
 
 
+def filter(parsers, *args, **kwargs):
+    """Used as a decorator to add a filter to multiple parsers."""
+
+    def inner(func):
+        for parser in parsers:
+            parser.filter(*args, **kwargs)(func)
+        return func
+
+    return inner
+
+
 @attrs
 class Parser:
     """A command parser. Decorate commands with Parser.command, filters with

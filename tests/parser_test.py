@@ -4,7 +4,7 @@ from inspect import isgenerator
 
 from pytest import raises
 
-from commandlet import Parser, Filter, command
+from commandlet import Parser, Filter, command, filter
 from commandlet.exc import ConvertionError, CommandFailedError
 
 
@@ -126,3 +126,15 @@ def test_copy(parser):
             raise RuntimeError(
                 'Attribute %s does not match: %r -> %r.' % (name, old, new)
             )
+
+
+def test__filter():
+    p1 = Parser()
+    p2 = Parser()
+
+    @filter([p1, p2], 'test')
+    def filter_test():
+        pass
+
+    assert 'test' in p1.filters
+    assert 'test' in p2.filters
