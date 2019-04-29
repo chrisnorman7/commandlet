@@ -43,6 +43,7 @@ class Parser:
     )
 
     def __attrs_post_init__(self):
+        self.filter('word', replacement='[^$ ]+')(lambda text: text)
         self.filter('str')(lambda text: text)
         self.filter('int', replacement='[0-9]+')(self.to_int)
         self.filter('float', replacement='[0-9]+[.][0-9]+')(self.to_float)

@@ -55,13 +55,27 @@ def test_str_filter(parser):
 
 
 def test_handle_command(parser):
-    name = 'test'
-    @parser.command(name, '%s <string>' % name)
-    def do_test(string):
-        return string
+    name = 'login'
+    @parser.command(name, '%s <str:username> <str:password>' % name)
+    def do_test(username, password):
+        return username, password
 
-    string = 'this'
-    assert parser.handle_command('%s %s' % (name, string)) == string
+    username = 'test_username'
+    password = 'test_password'
+    assert parser.handle_command(
+        '%s %s %s' % (name, username, password)
+    ) == (username, password)
+    @parser.command('describe', 'describe <string> <word:rest>')
+    def test_describe(string, rest=None):
+        return string, rest
+
+    string = 'This is a description of an'
+    rest = 'object'
+    describe_string, describe_rest = parser.handle_command(
+        'describe %s %s' % (string, rest)
+    )
+    assert describe_rest == 'object'
+    assert describe_string == string
 
 
 def test_command_failed(parser):
