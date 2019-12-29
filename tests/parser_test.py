@@ -152,3 +152,21 @@ def test__filter():
 
     assert 'test' in p1.filters
     assert 'test' in p2.filters
+
+
+def test_stringsplit():
+    p = Parser()
+    p.command('cast', 'cast <spell> <target>')(
+        lambda spell, target: (spell, target)
+    )
+    assert p.handle_command('cast test this') == ('test', 'this')
+
+
+def test_argument_default():
+    p = Parser()
+    p.command('cast', 'cast <spell> <target>', 'cast <spell>')(
+        lambda spell, target=None: (spell, target)
+    )
+    spell, target = p.handle_command('cast test')
+    assert spell == 'test'
+    assert target is None
